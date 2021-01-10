@@ -1,11 +1,5 @@
-/* Based on the code by Randy Mackay. DIYDrones.com
- ADNS3080.ino
- Kristian Sloth Lauszus
- Web      :  http://www.lauszus.com
- e-mail   :  lauszus@gmail.com
-*/
-
-//Modified by Jungwon Hwang for tracking raw data
+// Based on the code by Randy Mackay. DIYDrones.com, ADNS3080.ino
+// Modified by Jungwon Hwang for tracking raw data
 
 #include <SPI.h>
 
@@ -30,13 +24,13 @@ SPISettings spiSettings(2e6, MSBFIRST, SPI_MODE3); // 2 MHz, mode 3
 #define ADNS3080_PRODUCT_ID_VALUE      0x17
 
 static const uint8_t RESET_PIN = 9;
-static const uint8_t SS_PIN = 10; // Pin 10
+static const uint8_t SS_PIN = 10;
 
 static int32_t x, y;
 
 void setup() {
-  Serial.begin(115200);
-  while (!Serial); // Wait for serial port to open
+  Serial.begin(115200); // Setting the baudrate to 115200
+  while (!Serial);      // Wait for serial port to open
 
   SPI.begin();
 
@@ -46,45 +40,46 @@ void setup() {
   reset();
 
   uint8_t config = spiRead(ADNS3080_CONFIGURATION_BITS);
-  spiWrite(ADNS3080_CONFIGURATION_BITS, config | 0x10); // Set resolution to 1600 counts per inch
+  spiWrite(ADNS3080_CONFIGURATION_BITS, config | 0x10);  // Set resolution to 1600 counts per inch
 }
 
 void loop() {
 
-  updateSensor();
+  updateSensor();  
 
 }
 
+// Update the sensor reading data
 void updateSensor(void) {
   // Read sensor
-  uint8_t buf[4];
-  spiRead(ADNS3080_MOTION_BURST, buf, 4);
+  uint8_t buf[4];  // for sensor data motion, dx, dy, surface quality
+  spiRead(ADNS3080_MOTION_BURST, buf, 4);  // sensor data reading from sensor register (ADNS3080_MOTION_BURST)
   uint8_t motion = buf[0];
 
-
-  if (motion & 0x10){ // Check if we've had an overflow
-
+  if (motion & 0x10) {   // Check if we've had an overflow, print "0"
     Serial.print("0");
-    Serial.print('\n');}    
+    Serial.print('\n');
+  }    
 
   else if (motion & 0x80) {
     int8_t dx = buf[1]; 
     int8_t dy = buf[2];
     uint8_t surfaceQuality = buf[3];
-
+   
+   // Caculate the x, y data from ADNS3080_DELTA_X and ADNS3080_DELTA_Y
     x += dx;
     y += dy;
 
     // Print values
-    Serial.print(x);
+    Serial.print(x);   // Moved distance from the original x position
     Serial.print('\n');
-    Serial.print(dx);
+    Serial.print(dx);  // Moved distance from the previous x position
     Serial.print('\n');
-    Serial.print(y);      
+    Serial.print(y);   // Moved distance from the original y position     
     Serial.print('\n');
-    Serial.print(dy);
+    Serial.print(dy);  // Moved distance from the previous y position
     Serial.print('\n');
-    Serial.print(surfaceQuality);
+    Serial.print(surfaceQuality); // Serface quality. The higher value gives more accurate data.
     Serial.print('\n');
     Serial.flush();
   }
@@ -98,7 +93,7 @@ void updateSensor(void) {
 void reset(void) {
   digitalWrite(RESET_PIN, HIGH); // Set high
   delayMicroseconds(10);
-  digitalWrite(RESET_PIN, LOW); // Set low
+  digitalWrite(RESET_PIN, LOW);  // Set low
   delayMicroseconds(500); // Wait for sensor to get ready
 }
 
@@ -111,7 +106,7 @@ void spiWrite(uint8_t reg, uint8_t *data, uint8_t length) {
   digitalWrite(SS_PIN, LOW);
 
   SPI.transfer(reg | 0x80); // Indicate write operation
-  delayMicroseconds(75); // Wait minimum 75 us in case writing to Motion or Motion_Burst registers
+  delayMicroseconds(75);    // Wait minimum 75 us in case writing to Motion or Motion_Burst registers
   SPI.transfer(data, length); // Write data
 
   digitalWrite(SS_PIN, HIGH);
