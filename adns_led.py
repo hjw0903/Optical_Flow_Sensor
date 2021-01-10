@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-# NeoPixel library strandtest example
-# Author: Tony DiCola (tony@tonydicola.com)
-# Modified by Jungwon Hwang jhwang59@rrc.ca
-
+# NeoPixel library strandtest example, Tony DiCola (tony@tonydicola.com)
+# Modified by Jungwon Hwang (hjw0903@gmail.com) for using the ADNS sensor light
 
 import time
 from neopixel import *
-
 
 '''
 LED strip configuration:
@@ -20,7 +17,6 @@ LED_BRIGHTNESS : Set to 0 for darkest and 255 for brightest
 LED_INVERT : True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL : set to '1' for GPIOs 13, 19, 41, 45 or 53
 '''
-
 
 # Define functions which animate LEDs in various ways.
 def color_wipe(strip, color, wait_ms=50):
