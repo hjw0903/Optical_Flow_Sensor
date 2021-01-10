@@ -1,14 +1,8 @@
-#!/usr/bin/env python
-#
-# Copyright DIY Drone:
-# https://github.com/diydrones/ardupilot/tree/5ddbcc296dd6dd9ac9ed6316ac3134c736ae8a78/libraries/AP_OpticalFlow
-# Modified by Kristian Sloth Lauszus
-
-# Modified on July 2019 by Jungwon Hwang jhwang59@rrc.ca
+# Copyright DIY Drone, ADNS3080ImageGrabber.py
+# Modified by Jungwon Hwang (hjw0903@gmail.com) July, 2019
 # Reading the raw data [x,dX y,dY Surface_Quality] from serial port
 
 from serial import Serial, SerialException
-
 
 class OpticalFlow:
     ser = None
@@ -28,7 +22,7 @@ class OpticalFlow:
             self.ser = Serial(port='/dev/ttyUSB0', baudrate='115200', timeout=.1) 
             self.read_loop()  # Read from serial port
         except SerialException:
-            print("Failed to open serial port")
+            pass  # Do nothing
 
     def close_serial(self):
         if self.ser and self.ser.isOpen():
@@ -36,7 +30,7 @@ class OpticalFlow:
                 self.ser.close()
                 print("Closed serial port")
             except SerialException:
-                pass  # Do nothing
+                pass  
 
     def read_loop(self):
         if self.ser.isOpen():
